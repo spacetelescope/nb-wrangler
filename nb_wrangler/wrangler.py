@@ -310,7 +310,9 @@ class NotebookWrangler(WranglerConfigurable, WranglerLoggable, WranglerEnvable):
             return self.logger.info(
                 "Skipping SPI push and PR as per configuration.  Branch changes are local only."
             )
-        if self.config.spi_pr and not self.injector.create_pr(self.config.spi_branch, commit_message):
+        if self.config.spi_pr and not self.injector.create_pr(
+            self.config.spi_branch, commit_message
+        ):
             return False
         return True
 
