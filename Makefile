@@ -94,7 +94,7 @@ functional-tests:  fnc-test fnc-test-imports fnc-test-notebooks
 
 functional-misc: fnc-compact fnc-env-pack fnc-packages-uninstall fnc-env-unpack \
 	fnc-env-unregister	fnc-env-register fnc-env-delete fnc-spec-reset fnc-packages-compile \
-        fnc-env-kernel-cleanup
+        fnc-env-kernel-cleanup fnc-spi-basic-workflow
 
 fnc-preclean:
 	rm -rf ${NBW_ROOT} ./references
@@ -154,6 +154,20 @@ fnc-env-unregister: fnc-env-init
 
 fnc-env-kernel-cleanup: fnc-env-init
 	./nb-wrangler   fnc-test-spec.yaml --env-kernel-cleanup
+
+fnc-spi-basic-workflow: fnc-inject-spi
+	echo "--- Running basic SPI workflow test ---"
+	# Ensure clean state for git operations and remove previous test branches
+	cd inject-spi-references/science-platform-images && git checkout main && git branch -D test-spi-branch || true
+	# Run inject-spi with branch, commit, prune, build
+	./nb-wrangler fnc-test-spec.yaml --inject-spi --repos-dir inject-spi-references \
+		--spi-commit-message "Test SPI commit" \
+		--spi-prune --spi-build --spi-branch test-spi-branch
+	echo "--- Verifying basic SPI workflow test results ---"
+	# Check if branch was created
+	git -C inject-spi-references/science-platform-images branch | grep "test-spi-branch"
+	# Check if there are committed changes on that branch
+	git -C inject-spi-references/science-platform-images log -1 --pretty=format:"%s" test-spi-branch | grep "Test SPI commit"
 
 fnc-spec-reset: fnc-packages-compile
 	./nb-wrangler   fnc-test-spec.yaml --spec-reset

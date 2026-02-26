@@ -145,6 +145,15 @@ class EnvironmentManager(WranglerConfigurable, WranglerLoggable):
                     capture_output=True,
                 )
             )
+        elif output_mode == "uncaught":
+            parameters.update(
+                dict(
+                    capture_output=False,
+                    stdout=None,
+                    stderr=None,
+                    stdin=None,
+                )
+            )
         else:
             raise ValueError(f"Invalid output_mode value: {output_mode}")
         parameters.update(extra_parameters)

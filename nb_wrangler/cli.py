@@ -96,23 +96,23 @@ def parse_args():
         "--spi-branch",
         type=str,
         default="",
-        help=argparse.SUPPRESS,  # "Create a new branch in the SPI repo with this name."
+        # help=argparse.SUPPRESS,  # "Create a new branch in the SPI repo with this name."
     )
     spi_group.add_argument(
         "--spi-commit-message",
-        type=str,
-        default="",
-        help=argparse.SUPPRESS,  # "Commit message for the new branch. If not provided, a default message will be used."
-    )
-    spi_group.add_argument(
-        "--spi-build",
-        action="store_true",
-        help=argparse.SUPPRESS,  # "Trigger a Docker build in the SPI repo."
+        nargs="+",
+        default=[],
+        # help=argparse.SUPPRESS,  # "Commit message for the new branch. If not provided, a default message will be used."
     )
     spi_group.add_argument(
         "--spi-prune",
         action="store_true",
-        help=argparse.SUPPRESS,  # "Prune old Docker images before a build."
+        # help=argparse.SUPPRESS,  # "Prune old Docker images before a build."
+    )
+    spi_group.add_argument(
+        "--spi-build",
+        action="store_true",
+        # help=argparse.SUPPRESS,  # "Trigger a Docker build in the SPI repo."
     )
     spi_group.add_argument(
         "--spi-push",

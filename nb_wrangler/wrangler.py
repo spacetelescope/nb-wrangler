@@ -290,18 +290,14 @@ class NotebookWrangler(WranglerConfigurable, WranglerLoggable, WranglerEnvable):
             return False
         if not self.injector.add_injected_files():
             return False
-        if self.config.spi_prune:
-            if not self.injector.prune():
-                return False
-        if self.config.spi_build:
-            if not self.injector.build():
-                return False
+        if self.config.spi_prune and not self.injector.prune():
+            return False
+        if self.config.spi_build and not self.injector.build():
+            return False
         return True
 
     def _spi_commit_push_pr(self) -> bool:
         """Optionally commit, push, and PR the injected SPI changes."""
-        if not self.config.spi_push and not self.config.spi_pr:
-            return True
         commit_message = self.config.spi_commit_message
         if not commit_message:
             commit_message = f"nb-wrangler: Automated SPI injection for spec {self.spec_manager.spec_file.name}"
@@ -314,9 +310,8 @@ class NotebookWrangler(WranglerConfigurable, WranglerLoggable, WranglerEnvable):
             return self.logger.info(
                 "Skipping SPI push and PR as per configuration.  Branch changes are local only."
             )
-        if self.config.spi_pr:
-            if not self.injector.create_pr(self.config.spi_branch, commit_message):
-                return False
+        if self.config.spi_pr and not self.injector.create_pr(self.config.spi_branch, commit_message):
+            return False
         return True
 
     def _run_reinstall_spec_workflow(self) -> bool:

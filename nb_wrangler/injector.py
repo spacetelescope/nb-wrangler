@@ -250,6 +250,7 @@ Description:
             f"scripts/wrangler-prune {self.deployment_name}",
             check=False,
             cwd=self.spi_path,
+            output_mode="uncaught",
         )
         return self.env_manager.handle_result(
             result,
@@ -266,6 +267,7 @@ Description:
             check=False,
             cwd=self.spi_path,
             timeout=DOCKER_BUILD_TIMEOUT,
+            output_mode="uncaught",
         )
         return self.env_manager.handle_result(
             result,

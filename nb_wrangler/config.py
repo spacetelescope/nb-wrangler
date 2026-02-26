@@ -192,7 +192,7 @@ class WranglerConfig:
             spec_list=args.spec_list,
             spec_add=args.spec_add,
             spi_branch=args.spi_branch,
-            spi_commit_message=args.spi_commit_message,
+            spi_commit_message=" ".join(args.spi_commit_message),
             spi_build=args.spi_build,
             spi_prune=args.spi_prune,
             spi_push=args.spi_push,
