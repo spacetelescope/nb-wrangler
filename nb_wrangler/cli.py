@@ -105,7 +105,8 @@ def parse_args():
     )
     spi_group.add_argument(
         "--spi-commit-message",
-        nargs=1,
+        nargs="+",
+        type=str,
         default="",
         # help=argparse.SUPPRESS,  # "Commit message for the new branch. If not provided, a default message will be used."
     )
