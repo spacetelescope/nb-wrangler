@@ -127,9 +127,7 @@ class SpiInjector(WranglerLoggable, WranglerEnvable):
         self._inject(
             None, self.deployment_path / "MISSION_VERSION", self.spec_manager.moniker
         )
-        self._inject(
-            None, self.environments_path / "nbw-exports.sh", env_exports
-        )
+        self._inject(None, self.environments_path / "nbw-exports.sh", env_exports)
         self._inject(
             None,
             self.environments_path / "common-hints.mamba",
@@ -147,7 +145,10 @@ class SpiInjector(WranglerLoggable, WranglerEnvable):
         return self.logger.info("SPI injection complete.")
 
     def _inject(
-        self, field: Optional[str], where: str | Path, literal: Optional[str] = None
+        self,
+        field: Optional[str],
+        where: str | Path,
+        literal: Optional[str | list[str] | dict[str, str]] = None,
     ) -> None:
         self.logger.info(f"Injecting field {field} to {where}")
         where = Path(where)
