@@ -99,7 +99,7 @@ VALID_LOG_TIME_MODES = ["none", "normal", "elapsed", "both"]
 DEFAULT_LOG_TIMES_MODE = "elapsed"
 VALID_COLOR_MODES = ["auto", "on", "yes", "off", "no"]
 DEFAULT_COLOR_MODE = "auto"
-LOG_FILE = os.environ.get("NBW_LOG_FILE", "nb-wrangler.log")
+LOG_FILE = os.environ.get("NBW_LOG_FILE")
 
 DATA_SPEC_NAME = "refdata_dependencies.yaml"
 

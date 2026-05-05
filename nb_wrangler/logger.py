@@ -164,17 +164,17 @@ class WranglerLogger:
         )
         color_and_time_handler = logging.StreamHandler()
         color_and_time_handler.setFormatter(color_and_time_formatter)
-        file_handler = logging.FileHandler(LOG_FILE)
-        file_handler_formatter = ColorAndTimeFormatter(
-            log_times=self.log_times, color="off"
-        )
-        file_handler.setFormatter(file_handler_formatter)
+        handlers = [color_and_time_handler]
+        if LOG_FILE:
+            file_handler = logging.FileHandler(LOG_FILE)
+            file_handler_formatter = ColorAndTimeFormatter(
+                log_times=self.log_times, color="off"
+            )
+            file_handler.setFormatter(file_handler_formatter)
+            handlers.append(file_handler)
         logging.basicConfig(
             level=logging.DEBUG if self.verbose else logging.INFO,
-            handlers=[
-                color_and_time_handler,
-                file_handler,
-            ],
+            handlers=handlers,
             force=True,  # Override any existing configuration
             # format="%(levelname)s - %(message)s",
             # datefmt="%Y-%m-%dT%H:%M:%S",  # ISO 8601 format
@@ -187,7 +187,8 @@ class WranglerLogger:
                 logger.removeHandler(handler)
                 handler.close()
         try:
-            os.remove(LOG_FILE)
+            if LOG_FILE:
+                os.remove(LOG_FILE)
         except FileNotFoundError:
             pass
         return True
