@@ -48,6 +48,8 @@ INFO: 00:00:00.000 Initiating SPI injection into spi-references/science-platform
 INFO: 00:00:00.000 Injecting field test_imports to spi-references/science-platform-images/deployments/tike/environments/tess/tests/imports
 INFO: 00:00:00.000 Injecting field mamba_spec to spi-references/science-platform-images/deployments/tike/environments/tess/tess.yml
 INFO: 00:00:00.000 Injecting field pip_compiler_output to spi-references/science-platform-images/deployments/tike/environments/tess/tess.pip
+INFO: 00:00:00.000 Injecting field None to spi-references/science-platform-images/deployments/tike/environments/common-hints.mamba
+INFO: 00:00:00.000 Injecting field None to spi-references/science-platform-images/deployments/tike/environments/common-hints.pip
 INFO: 00:00:00.000 Saving spec file to spi-references/science-platform-images/deployments/tike/environments/nbw-wrangler-spec.yaml.
 INFO: 00:00:00.055 SPI injection complete.
 INFO: 00:00:00.000 Exceptions: 0
@@ -100,6 +102,8 @@ Changes not staged for commit:
 Untracked files:
   deployments/tike/environments/nbw-wrangler-spec.yaml
   deployments/tike/environments/nbw-exports.sh
+  deployments/tike/environments/common-hints.mamba
+  deployments/tike/environments/common-hints.pip
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ```

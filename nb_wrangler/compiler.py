@@ -229,6 +229,7 @@ class RequirementsCompiler(WranglerConfigurable, WranglerLoggable, WranglerEnvab
 
             all_mamba_pkg_map = dict(
                 base_mamba_deps=base_mamba_spec.get("dependencies", []),
+                common_mamba_packages=list(self.spec_manager.common_mamba_packages),
                 extra_mamba_packages=list(self.spec_manager.extra_mamba_packages),
                 spi_mamba_packages=self.read_package_versions(spi_mamba_files),
                 wrangler_target_packages=TARGET_PACKAGES,
@@ -250,11 +251,15 @@ class RequirementsCompiler(WranglerConfigurable, WranglerLoggable, WranglerEnvab
             extra_pip_packages_file = utils.writelines(
                 self.spec_manager.extra_pip_packages, "extra_pip_packages.txt"
             )
+            common_pip_packages_file = utils.writelines(
+                self.spec_manager.common_pip_packages, "common_pip_packages.txt"
+            )
             # These paths should make self-identify where they came from, hence
             # no dictionary needed here.
             non_mamba_pip_req_files = list(notebook_req_files)
             non_mamba_pip_req_files.extend(spi_pip_files)
             non_mamba_pip_req_files.append(Path(extra_pip_packages_file))
+            non_mamba_pip_req_files.append(Path(common_pip_packages_file))
 
             return (
                 kernel_name,

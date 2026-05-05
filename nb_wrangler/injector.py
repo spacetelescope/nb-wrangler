@@ -127,7 +127,19 @@ class SpiInjector(WranglerLoggable, WranglerEnvable):
         self._inject(
             None, self.deployment_path / "MISSION_VERSION", self.spec_manager.moniker
         )
-        self._inject(None, self.environments_path / "nbw-exports.sh", env_exports)
+        self._inject(
+            None, self.environments_path / "nbw-exports.sh", env_exports
+        )
+        self._inject(
+            None,
+            self.environments_path / "common-hints.mamba",
+            self.spec_manager.common_mamba_packages,
+        )
+        self._inject(
+            None,
+            self.environments_path / "common-hints.pip",
+            self.spec_manager.common_pip_packages,
+        )
         self.spec_manager.save_spec_as(
             self.environments_path / "nbw-wrangler-spec.yaml", add_sha256=True
         )

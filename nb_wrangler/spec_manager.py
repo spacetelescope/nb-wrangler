@@ -127,8 +127,16 @@ class SpecManager(
         return list(self._spec.get("extra_mamba_packages") or [])
 
     @property
+    def common_mamba_packages(self) -> list[str]:
+        return list(self._spec.get("common_mamba_packages") or [])
+
+    @property
     def extra_pip_packages(self) -> list[str]:
         return list(self._spec.get("extra_pip_packages") or [])
+
+    @property
+    def common_pip_packages(self) -> list[str]:
+        return list(self._spec.get("common_pip_packages") or [])
 
     @property
     def override_pip_versions(self) -> list[str]:
@@ -526,7 +534,9 @@ class SpecManager(
         "refdata_dependencies": ["install_files", "other_variables"],
         "environment_spec": ["uri", "repo", "path"],
         "extra_mamba_packages": [],
+        "common_mamba_packages": [],
         "extra_pip_packages": [],
+        "common_pip_packages": [],
         "override_pip_versions": [],
         "selected_notebooks": [
             "repo",

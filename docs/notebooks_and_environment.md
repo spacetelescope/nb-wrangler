@@ -375,11 +375,19 @@ for resolving any difficult package conflicts which result from combining requir
 It is possible to add a list of extra mamba packages directly to the wrangler spec as `extra_mamba_packages`
 and these will be added to the environment by mamba in addition to those specified in the base mamba spec.
 
+### Inlined common_mamba_packages
+
+Likewise, `common_mamba_packages` allows you to specify mamba packages that should be installed in both your curated environment and the science platform's base environment (when using SPI injection).
+
 ### Inlined extra_pip_packages
 
 Likewise it is possible to inline extra pip packages by adding `extra_pip_packages` to the wrangler spec and
 these will nominally be added by `uv pip` in addition to those specified by the base mamba spec and/or
 requirements.txt files.
+
+### Inlined common_pip_packages
+
+Similarly, `common_pip_packages` specifies pip packages that should be installed in both your curated environment and the science platform's base environment.
 
 ### Notebook Repo Helper Modules
 

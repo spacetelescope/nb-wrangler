@@ -47,8 +47,12 @@ selected_notebooks:
 
 extra_mamba_packages:
   - pip
+common_mamba_packages:
+  - hdf5
 extra_pip_packages:
   - boto3
+common_pip_packages:
+  - requests
 
 system:
   spec_version: 1.0
@@ -136,10 +140,16 @@ The format follows the same structure as the repository-level `refdata_dependenc
 See [Reference Data Dependencies](refdata_dependencies.md) for more details on the format.
 
 ### **extra_mamba_packages**
-A list of additional mamba packages required by your environment but not specified by the notebook repos.
+A list of additional mamba packages required specifically by your curated kernel environment.
+
+### **common_mamba_packages**
+A list of additional mamba packages required by your curated kernel environment that are *also* required by the science platform's base environment. When using SPI injection (`--inject-spi`), these packages are written to `common-hints.mamba` to ensure they are available across all environments in the image.
 
 ### **extra_pip_packages**
-A list of additional pip packages required by your environment.
+A list of additional pip packages required specifically by your curated kernel environment.
+
+### **common_pip_packages**
+A list of additional pip packages required by your curated kernel environment that are *also* required by the science platform's base environment. When using SPI injection (`--inject-spi`), these packages are written to `common-hints.pip` to ensure they are available across all environments in the image.
 
 ### **system**
 This section contains specifications for the system environment. It is updated by nb-wrangler automatically and should rarely need curator updates.
