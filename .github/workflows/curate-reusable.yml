@@ -115,11 +115,6 @@ jobs:
             ./nb-wrangler --data-reset-curation
             ./nb-wrangler --data-curate
 
-      - name: Test imports for native environment
-        run: |
-            cd $GITHUB_WORKSPACE/../nb-wrangler-tool
-            ./nb-wrangler --test-imports
-
       - name: Log in to GHCR
         run: echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
@@ -158,6 +153,11 @@ jobs:
           scripts/image-configure ${SPEC_DEPLOYMENT}
           source setup-env
           scripts/image-scan
+
+      - name: Test imports for native environment
+        run: |
+            cd $GITHUB_WORKSPACE/../nb-wrangler-tool
+            ./nb-wrangler --test-imports
 
       - name: Test notebooks inside image
         run: |
