@@ -58,8 +58,8 @@ system:
   spi:
     repo: https://github.com/spacetelescope/science-platform-images.git
     ref: main
-  date_updated: '2026-06-08T15:47:15.406960'
-  spec_sha256: 55ad4cefda14b43915234d8a4391c29cd5e3b7b6c8d8640907d930ad3c010411
+  date_updated: '2026-06-09T16:33:35.195412'
+  spec_sha256: 737e241b7747042802d4d068bd3c5eb0e29cf8930dbd796c0366d203fe6ee38e
 out:
   repositories:
     tike_content:
@@ -1765,3 +1765,14 @@ out:
         # via reproject
     zipp==4.1.0 ; python_full_version < '3.12'
         # via importlib-metadata
+  data:
+    spec_inputs:
+      references/tike_content/refdata_dependencies.yaml:
+        install_files: {}
+        other_variables: {}
+      references/mast_notebooks/refdata_dependencies.yaml:
+        install_files: {}
+        other_variables: {}
+    spec_exports: {}
+    pantry_exports: {}
+    metadata: {}
