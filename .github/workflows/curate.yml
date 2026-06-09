@@ -50,7 +50,12 @@ jobs:
         run: |
           # Primary spec from notebook repo
           export NBW_SPEC=$GITHUB_WORKSPACE/${{ inputs.spec_file }}
+
+          # name in git repo
           echo NBW_SPEC=$NBW_SPEC >>$GITHUB_ENV
+
+          # name inside Dockerfile
+          echo SPEC_NAME=nbw-wrangler-spec.yaml >>$GITHUB_ENV
 
       - name: Download nb-wrangler bootstrap script explicitly
         run: |
@@ -107,9 +112,6 @@ jobs:
           export SPEC_DEPLOYMENT=$(yq -r .image_spec_header.deployment_name ${NBW_SPEC})
           echo  SPEC_DEPLOYMENT=$SPEC_DEPLOYMENT >> $GITHUB_ENV
 
-          # name inside Docker archive
-          echo SPEC_NAME=nbw-wrangler-spec.yaml >> $GITHUB_ENV
-
           # Root location for curated data and environment archives, also needed for notebook tests
           source ./nb-wrangler environment
           echo NBW_PANTRY=$NBW_PANTRY >>$GITHUB_ENV
@@ -137,7 +139,7 @@ jobs:
           cp ${NBW_SPEC} .
           cat > Dockerfile << EOF
           FROM scratch
-          COPY nbw-wrangler-spec.yaml ${SPEC_NAME}
+          COPY $(basename ${NBW_SPEC}) ${SPEC_NAME}
           EOF
 
       - name: Build Spec archive and push to GHCR
