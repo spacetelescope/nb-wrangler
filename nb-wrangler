@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# set -x
+set -x
 
 setup_env() {
     export NBW_PYTHON_VERSION=${NBW_PYTHON_VERSION:-"3.11"}
@@ -45,7 +45,7 @@ resolve_spec_wrangler() {
     if [ ! -f "$spec" ]; then
         return 1
     fi
-    
+
     # Try to use yq from the system or from our environment if it's already there
     local YQ_CMD="yq"
     if ! command -v yq >/dev/null 2>&1; then
@@ -76,17 +76,17 @@ resolve_spec_wrangler() {
 bootstrap() {
     local spec=$1
     local ref_override=$2
-    
+
     # If we have a spec, try to resolve BEFORE we do much else,
     # but we might need to install micromamba first to get yq if not on system.
-    
+
     rm -rf "${NBW_MM}"
     install_micromamba
-    
+
     # Install minimal tools to handle the rest of bootstrap
     "${NBW_MAMBA}" activate
     "${NBW_MAMBA}" install --quiet --yes -c conda-forge yq
-    
+
     if [ -n "$spec" ]; then
         resolve_spec_wrangler "$spec"
     fi
@@ -144,7 +144,7 @@ install_micromamba() {
 
     "${NBW_MAMBA}" config append channels conda-forge
     "${NBW_MAMBA}" config set channel_priority strict
-    "${NBW_MAMBA}" self-update
+    # "${NBW_MAMBA}" self-update
 
     # Generate initialization script for micromamba
     # "${NBW_MAMBA}" shell init -s "${NBW_SHELL}" # > "${NBW_ROOT}/micromamba-init.sh"
@@ -257,7 +257,7 @@ case $NBW_COMMAND in
         ${NBW_MAMBA} activate ${NBW_WRANGLER_ENV}
         eval $(python -m nb_wrangler $* --data-print-exports 2>/dev/null)
         ${NBW_MAMBA} activate $(python -m nb_wrangler $* --env-print-name 2>/dev/null)
-        ;; 
+        ;;
     deact*)
         eval "$("${NBW_MAMBA}" shell hook --shell "${NBW_SHELL}")"
         ${NBW_MAMBA} deactivate
