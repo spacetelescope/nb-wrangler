@@ -8,8 +8,8 @@ image_spec_header:
   deployment_name: "wrangler"
   display_name: "Jwebbinar 50 (Python 3.12)"
   python_version: "3.12"
-  valid_on: "2026-07-01"
-  expires_on: "2027-07-01"
+  valid_on: 2026-07-01
+  expires_on: 2027-07-01
 
 repositories:
   jwebbinar_prep:
@@ -41,10 +41,10 @@ out:
     repo: "https://github.com/spacetelescope/science-platform-images.git"
     ref: 103cf61bea49a687cf8a168b76e1a415f4718b8c
   test_notebooks:
-    references/jwebbinar_prep/jwebbinar50/01_imaging_astroquery_UI.ipynb: 
+    references/jwebbinar_prep/jwebbinar50/01_imaging_astroquery_UI.ipynb:
       jwebbinar_all
     references/jwebbinar_prep/jwebbinar50/02_IFU_UIAPI.ipynb: jwebbinar_all
-    references/jwebbinar_prep/jwebbinar50/03_lineanalysis_API.ipynb: 
+    references/jwebbinar_prep/jwebbinar50/03_lineanalysis_API.ipynb:
       jwebbinar_all
   test_imports:
     - astropy
