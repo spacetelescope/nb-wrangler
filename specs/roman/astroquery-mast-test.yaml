@@ -1,0 +1,46 @@
+# nb-wrangler specification file
+# Generated on: 2026-07-08T10:27:45.626055
+
+image_spec_header:
+  image_name: Astroquery-MAST-Test
+  description: "JUSI-2766"
+  kernel_name: astroquery-mast-test
+  deployment_name: "wrangler"
+  display_name: "Clone of roman-22.0.0 with additional of dev astroquery package"
+  python_version: 3.12
+  valid_on: 2026-07-08
+  expires_on: 2027-07-08
+
+repositories:
+  roman_noteboks:
+    url: https://github.com/spacetelescope/roman_notebooks.git
+    ref: dev
+
+selected_notebooks:
+  roman_all:
+    repo: roman_notebooks
+    root_directory: notebooks/
+    include_subdirs:
+      - '.*'
+
+extra_mamba_packages:
+  - pip
+
+extra_pip_packages:
+  - boto3
+  - lsstdesc.coord
+  - git+https://github.com/snbianco/astroquery.git@mast-beta-release
+
+common_pip_packages:
+  - bqplot>=0.12.47
+  
+system:
+  spec_version: 2.1
+  archive_format: .tar
+  primary_repo: spacetelescope/roman_notebooks
+  nb-wrangler:
+    repo: "https://github.com/spacetelescope/nb-wrangler.git"
+    ref: main
+  spi:
+    repo: "https://github.com/spacetelescope/science-platform-images.git"
+    ref: main
