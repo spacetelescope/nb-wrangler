@@ -25,8 +25,8 @@ system:
   spi:
     repo: https://github.com/spacetelescope/science-platform-images.git
     ref: main
-  date_updated: '2026-07-20T16:25:08.769043'
-  spec_sha256: de91542104db4ea676fe459d3053cf9c47c17cb5e74b901b3a7ffb78ab004a73
+  date_updated: '2026-07-21T13:48:37.421347'
+  spec_sha256: bc3f25e00e38ed7055b3b5f9c7ea93b4aa88cec73fa67fa107a5e11f76650972
 selected_notebooks:
   roman_all:
     repo: roman_notebooks
@@ -64,10 +64,10 @@ common_mamba_packages: []
 extra_pip_packages:
   - boto3
   - lsstdesc.coord
-  - motorcycle
 
 common_pip_packages:
   - bqplot>=0.12.47
+  - motorcycle
 
 override_pip_versions:
   # - jdaviz @ git+https://github.com/spacetelescope/jdaviz@main
@@ -84,7 +84,7 @@ out:
       resolved_ref: dev
   spi:
     repo: https://github.com/jaytmiller/science-platform-images.git
-    ref: c41643bfe35c101ac756e72533d0ff9c8c73c5f8
+    ref: 3aedea3fa6b23bdae174e0997ab964814407ab4c
   test_notebooks:
     references/roman_notebooks/notebooks/aperture_photometry/aperture_photometry.ipynb: 
       roman_all
@@ -1232,7 +1232,7 @@ out:
         #   jaraco-classes
         #   jaraco-functools
     motorcycle==0.1.2
-        # via -r /Users/jshih/.nbw-live/temps/extra_pip_packages.txt
+        # via -r /Users/jshih/.nbw-live/temps/common_pip_packages.txt
     mpl-scatter-density==0.8
         # via glue-core
     msgpack==1.2.1
