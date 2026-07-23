@@ -166,10 +166,10 @@ class SpecManager(
         return self._spec.get("environment_spec")
 
     @property
-    def assets(self) -> list[dict[str, str]]:
+    def assets(self) -> list[dict[str, Any]]:
         """Return a list of asset definitions from the spec.
         
-        Each asset is a dictionary with keys: repo, ref, source, destination.
+        Each asset is a dictionary with keys: repo, ref, source, destination, and optionally contents_only.
         Returns an empty list if no assets are defined.
         """
         if self.config.dev and "dev_overrides" in self._spec:
@@ -567,11 +567,11 @@ class SpecManager(
             "manager",
         ],
         "repositories": ["url", "ref"],
-        # Assets is a list of dictionaries, each with repo/ref/source/destination keys.
+        # Assets is a list of dictionaries, each with repo/ref/source/destination keys (and optional contents_only).
         # We define the structure for validation purposes. The validator should handle 
         # lists by checking that items match expected patterns if needed.
         "assets": [  # List indicator - actual item schema defined below in comments or handled specially
-            {"repo": None, "ref": None, "source": None, "destination": None}
+            {"repo": None, "ref": None, "source": None, "destination": None, "contents_only": None}
         ],  
         "refdata_dependencies": ["install_files", "other_variables"],
         "environment_spec": ["uri", "repo", "path"],

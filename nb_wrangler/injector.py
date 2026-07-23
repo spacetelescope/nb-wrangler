@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 import re
+import glob
 from typing import Optional
 
 from .logger import WranglerLoggable
@@ -222,12 +223,31 @@ class SpiInjector(WranglerLoggable, WranglerEnvable):
         )
         if not repo_path or not repo_path.exists():
             raise RuntimeError(f"Failed to setup asset repository {repo_url}")
-        src_path = repo_path / source
+        clean_source = source.rstrip("/").lstrip("/")
+        src_path = repo_path / clean_source if clean_source else repo_path
         if not src_path.exists():
             raise RuntimeError(
                 f"Asset source path '{source}' not found in {repo_url} at ref '{ref}'"
             )
         return src_path
+
+    def _resolve_asset_sources(
+        self, repo_path: Path, repo_url: str, ref: Optional[str], source: str
+    ) -> tuple[list[Path], bool]:
+        """Resolve source path or glob pattern into a list of matching Paths."""
+        if "*" in source or "?" in source:
+            clean_pattern = source.lstrip("/")
+            full_pattern = str(repo_path / clean_pattern)
+            matched_strs = sorted(glob.glob(full_pattern, recursive=True))
+            matched_paths = [Path(p) for p in matched_strs if Path(p) != repo_path]
+            if not matched_paths:
+                raise RuntimeError(
+                    f"Asset source pattern '{source}' matched no files in {repo_url} at ref '{ref}'"
+                )
+            return matched_paths, True
+        else:
+            src_path = self._fetch_asset_source(repo_url, ref, source)
+            return [src_path], False
 
     def _stage_and_build_asset_command(
         self, idx: int, asset: dict, assets_dir: Path
@@ -242,29 +262,89 @@ class SpiInjector(WranglerLoggable, WranglerEnvable):
         self.logger.info(
             f"Processing asset {idx + 1}: {source} -> {destination} from {repo_url}"
         )
-        src_path = self._fetch_asset_source(repo_url, ref, source)
+        repo_path = self.repo_manager._setup_remote_repo(
+            repo_url, floating_mode=True, ref=ref
+        )
+        if not repo_path or not repo_path.exists():
+            raise RuntimeError(f"Failed to setup asset repository {repo_url}")
+
+        matched_paths, is_glob = self._resolve_asset_sources(
+            repo_path, repo_url, ref, source
+        )
 
         stage_item_dir = assets_dir / f"asset_{idx}"
         stage_item_dir.mkdir(parents=True, exist_ok=True)
+
+        if is_glob:
+            return self._stage_and_build_glob_asset(
+                idx, source, destination, matched_paths, stage_item_dir
+            )
+
+        src_path = matched_paths[0]
         staged_dest = stage_item_dir / src_path.name
         rel_staged = f"assets/asset_{idx}/{src_path.name}"
 
         if src_path.is_dir():
             shutil.copytree(src_path, staged_dest)
-            return self._build_directory_asset_cmds(idx, source, destination, rel_staged)
+            copy_contents_only = (
+                source.endswith("/")
+                or source.endswith("/*")
+                or asset.get("contents_only", False)
+            )
+            return self._build_directory_asset_cmds(
+                idx, source, destination, rel_staged, copy_contents_only
+            )
         else:
             shutil.copy2(src_path, staged_dest)
             return self._build_file_asset_cmds(idx, source, destination, rel_staged)
 
+    def _stage_and_build_glob_asset(
+        self,
+        idx: int,
+        source: str,
+        destination: str,
+        matched_paths: list[Path],
+        stage_item_dir: Path,
+    ) -> list[str]:
+        """Stage glob-matched files/directories and generate installation commands."""
+        script_lines = [
+            f"# Asset {idx}: glob {source} -> {destination}",
+            f'echo "Installing asset pattern {source} ({len(matched_paths)} items) to {destination}..."',
+            f'mkdir -p "{destination}"',
+        ]
+        for src_path in matched_paths:
+            staged_dest = stage_item_dir / src_path.name
+            rel_staged = f"assets/asset_{idx}/{src_path.name}"
+            if src_path.is_dir():
+                if staged_dest.exists():
+                    shutil.rmtree(staged_dest)
+                shutil.copytree(src_path, staged_dest)
+                script_lines.append(f'cp -r "{rel_staged}" "{destination}/"')
+            else:
+                shutil.copy2(src_path, staged_dest)
+                script_lines.append(f'cp "{rel_staged}" "{destination}/"')
+        script_lines.append("")
+        return script_lines
+
     def _build_directory_asset_cmds(
-        self, idx: int, source: str, destination: str, rel_staged: str
+        self,
+        idx: int,
+        source: str,
+        destination: str,
+        rel_staged: str,
+        copy_contents_only: bool = True,
     ) -> list[str]:
         """Generate bash lines to install a directory asset."""
+        if copy_contents_only:
+            cp_cmd = f'cp -r "{rel_staged}"/. "{destination}/"'
+        else:
+            cp_cmd = f'cp -r "{rel_staged}" "{destination}/"'
+
         return [
             f"# Asset {idx}: directory {source} -> {destination}",
             f'echo "Installing asset directory {rel_staged} to {destination}..."',
             f'mkdir -p "{destination}"',
-            f'cp -r "{rel_staged}"/. "{destination}/"',
+            cp_cmd,
             "",
         ]
 
