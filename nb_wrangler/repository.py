@@ -66,11 +66,11 @@ class RepositoryManager(WranglerConfigurable, WranglerLoggable, WranglerEnvable)
         """Set up a remote repository by cloning or updating."""
         repo_path = self._repo_path(repo_url)
         if repo_path.exists():
-            self.logger.info(f"Using existing local clone at {repo_path}")
+            self.logger.debug(f"Using existing local clone at {repo_path}")
             repo_name = repo_path.name
             try:
                 if floating_mode:
-                    self.logger.info(f"Floating mode: updating repo {repo_url}")
+                    self.logger.debug(f"Floating mode: updating repo {repo_url}")
                     self.run("git fetch --tags", check=True, cwd=repo_path)
 
                     # Determine default branch from origin
@@ -81,7 +81,9 @@ class RepositoryManager(WranglerConfigurable, WranglerLoggable, WranglerEnvable)
                         cwd=repo_path,
                     )
                     if result.returncode != 0:
-                        return self.logger.error(f"Failed to determine default branch for {repo_url}." )
+                        return self.logger.error(
+                            f"Failed to determine default branch for {repo_url}."
+                        )
                     default_branch = (
                         result.stdout.strip()
                         .replace("refs/remotes/origin/", "")
@@ -234,9 +236,8 @@ class RepositoryManager(WranglerConfigurable, WranglerLoggable, WranglerEnvable)
         repo_root = self.repos_dir / repo_name
         result = self.run(f"git checkout {branch}", check=False, cwd=repo_root)
         if result.returncode == 0:
-            return self.logger.info(
-                f"Checked out repo {repo_name} existing branch {branch}."
-            )
+            self.logger.debug(f"Checked out repo {repo_name} existing branch {branch}.")
+            return True
         else:
             self.logger.warning(
                 f"Failed checking out repo {repo_name} existing branch {branch}."

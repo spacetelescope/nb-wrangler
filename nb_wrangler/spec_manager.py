@@ -165,17 +165,73 @@ class SpecManager(
     def environment_spec(self) -> dict[str, Any] | None:
         return self._spec.get("environment_spec")
 
+    def flatten_asset_entries(self, assets: list[dict]) -> list[dict[str, Any]]:
+        """Normalize asset entries into a flat list of dictionaries.
+
+        Supports two syntaxes:
+          1) Old/flat format: each item is a dict with repo/ref/source/destination keys.
+             Example: [{"repo": "...", "ref": "main", "source": "/a/", "destination": "/b"}]
+
+          2) New/grouped format: items share common repo/ref via an 'items' list.
+             Example: [
+               {"repo": "...", "ref": "main",
+                "items": [{"source": "/x/", "destination": "/y/"}, ...]}
+             ]
+
+        Returns a flat list where each entry contains at least `repo`, `ref`, `source`, and `destination`.
+        """
+        if not assets:
+            return []
+
+        flat = []
+        for entry in assets:
+            items_list = entry.get("items")
+            repo_url = entry.get("repo", "")
+            ref_val = entry.get("ref")
+
+            # New grouped syntax: expand 'items' list with inherited metadata
+            if isinstance(items_list, list) and len(items_list) > 0:
+                for item in items_list:
+                    flat_asset: dict[str, Any] = {"repo": repo_url, "ref": ref_val}
+                    if isinstance(item, dict):
+                        # Item-level keys override inherited ones (source/destination/etc.)
+                        flat_asset.update(item)
+                    else:
+                        self.logger.warning(
+                            f"Skipping non-dict item in grouped asset entry with repo={repo_url}"
+                        )
+                        continue
+                    flat.append(flat_asset)
+
+            # Old flat syntax or single-entry without 'items' key
+            elif isinstance(entry, dict):
+                flat.append(dict(entry))  # shallow copy to avoid mutation issues
+
+        return flat
+
     @property
     def assets(self) -> list[dict[str, Any]]:
-        """Return a list of asset definitions from the spec.
-        
-        Each asset is a dictionary with keys: repo, ref, source, destination, and optionally contents_only.
-        Returns an empty list if no assets are defined.
+        """Return a normalized (flattened) list of asset definitions from the spec.
+
+        Each returned dictionary contains keys such as repo, ref, source, destination,
+        and optionally contents_only. Supports both old flat syntax and new grouped
+        syntax with 'items'. Returns an empty list if no assets are defined.
+
+        The normalization step ensures backward compatibility: downstream consumers like
+        injector.py receive a consistent flat structure regardless of how the YAML was authored.
         """
+        raw_assets: list[dict[str, Any]] = []
+
+        # Check dev_overrides first when in dev mode
         if self.config.dev and "dev_overrides" in self._spec:
             if "assets" in self._spec["dev_overrides"]:
-                return self._spec["dev_overrides"]["assets"] or []
-        return self._spec.get("assets") or []
+                raw_assets = self._spec["dev_overrides"]["assets"] or []
+
+        # Fall back to main spec assets section
+        if not raw_assets:
+            raw_assets = self._spec.get("assets") or []
+
+        return self.flatten_asset_entries(raw_assets)
 
     @property
     def spi(self) -> dict[str, str]:
@@ -567,12 +623,21 @@ class SpecManager(
             "manager",
         ],
         "repositories": ["url", "ref"],
-        # Assets is a list of dictionaries, each with repo/ref/source/destination keys (and optional contents_only).
-        # We define the structure for validation purposes. The validator should handle 
-        # lists by checking that items match expected patterns if needed.
-        "assets": [  # List indicator - actual item schema defined below in comments or handled specially
-            {"repo": None, "ref": None, "source": None, "destination": None, "contents_only": None}
-        ],  
+        # Assets supports two syntaxes:
+        # 1) Flat list of dicts with keys repo, ref, source, destination (and optional contents_only).
+        #    Example: [{"repo":"...","ref":"main","source":"/a/","destination":"/b"}]
+        # 2) Grouped entries where 'items' is a sub-list sharing common repo/ref.
+        #    Each item in the list must have at least source and destination keys,
+        #    with optional contents_only. The parent entry provides inherited repo/ref values.
+        "assets": [
+            {
+                "repo": None,
+                "ref": None,
+                "source": None,
+                "destination": None,
+                "contents_only": None,
+            }
+        ],
         "refdata_dependencies": ["install_files", "other_variables"],
         "environment_spec": ["uri", "repo", "path"],
         "extra_mamba_packages": [],
@@ -618,7 +683,6 @@ class SpecManager(
 
     REQUIRED_KEYWORDS: dict[str, Any] = {
         # Assets is optional - not included in required keywords unless specified otherwise.
-        
         "image_spec_header": [
             "image_name",
             "kernel_name",
