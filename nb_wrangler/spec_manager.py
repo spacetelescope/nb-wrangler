@@ -7,7 +7,7 @@ import copy
 
 from . import utils
 from . import yaml_typed_values
-from .logger import WranglerLoggable
+from .logger import WranglerLoggable, get_configured_logger
 from .config import WranglerConfigurable  # Import WranglerConfigurable
 from .constants import DEFAULT_ARCHIVE_FORMAT
 from .spec_validator import SpecValidator
@@ -165,7 +165,8 @@ class SpecManager(
     def environment_spec(self) -> dict[str, Any] | None:
         return self._spec.get("environment_spec")
 
-    def flatten_asset_entries(self, assets: list[dict]) -> list[dict[str, Any]]:
+    @staticmethod
+    def flatten_asset_entries(assets: list[dict]) -> list[dict[str, Any]]:
         """Normalize asset entries into a flat list of dictionaries.
 
         Supports two syntaxes:
@@ -190,14 +191,19 @@ class SpecManager(
             ref_val = entry.get("ref")
 
             # New grouped syntax: expand 'items' list with inherited metadata
-            if isinstance(items_list, list) and len(items_list) > 0:
+            if isinstance(items_list, list):
+                # Handle empty items list - skip entirely (this was the bug)
+                if len(items_list) == 0:
+                    continue
+                    
                 for item in items_list:
                     flat_asset: dict[str, Any] = {"repo": repo_url, "ref": ref_val}
                     if isinstance(item, dict):
                         # Item-level keys override inherited ones (source/destination/etc.)
                         flat_asset.update(item)
                     else:
-                        self.logger.warning(
+                        log = get_configured_logger()
+                        log.warning(
                             f"Skipping non-dict item in grouped asset entry with repo={repo_url}"
                         )
                         continue

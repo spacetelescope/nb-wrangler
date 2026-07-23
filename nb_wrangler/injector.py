@@ -175,12 +175,12 @@ class SpiInjector(WranglerLoggable, WranglerEnvable):
         """Inject assets specified in the spec into the SPI environments directory.
 
         This copies asset files/directories from their source repositories into
-        `environments/assets/` and generates `environments/dockerfile-assets.sh`
+        `environments/assets/` and generates `environments/install-assets.sh`
         to copy assets to their final destinations inside the container image during Docker build.
         """
         assets = self.spec_manager.assets
         assets_dir = self.environments_path / "assets"
-        assets_sh_file = self.environments_path / "dockerfile-assets.sh"
+        assets_sh_file = self.environments_path / "install-assets.sh"
 
         if not assets:
             return self._clean_asset_injection(assets_dir, assets_sh_file)

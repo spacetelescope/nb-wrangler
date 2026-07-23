@@ -90,7 +90,7 @@ def test_asset_directory_trailing_slash(tmp_path: Path):
 
     injector._inject_assets()
 
-    assets_sh = environments_dir / "dockerfile-assets.sh"
+    assets_sh = environments_dir / "install-assets.sh"
     assert assets_sh.exists()
     content = assets_sh.read_text()
     assert 'cp -r "assets/asset_0/data"/. "/opt/app/data/"' in content
@@ -127,7 +127,7 @@ def test_asset_directory_without_trailing_slash(tmp_path: Path):
 
     injector._inject_assets()
 
-    assets_sh = environments_dir / "dockerfile-assets.sh"
+    assets_sh = environments_dir / "install-assets.sh"
     content = assets_sh.read_text()
     # Without trailing slash, should copy the directory container itself
     assert 'cp -r "assets/asset_0/data" "/opt/app/"' in content
@@ -161,7 +161,7 @@ def test_asset_directory_contents_only_flag(tmp_path: Path):
 
     injector._inject_assets()
 
-    assets_sh = environments_dir / "dockerfile-assets.sh"
+    assets_sh = environments_dir / "install-assets.sh"
     content = assets_sh.read_text()
     # With contents_only: True, should copy contents directly
     assert 'cp -r "assets/asset_0/data"/. "/opt/app/data/"' in content
@@ -196,7 +196,7 @@ def test_asset_glob_pattern(tmp_path: Path):
 
     injector._inject_assets()
 
-    assets_sh = environments_dir / "dockerfile-assets.sh"
+    assets_sh = environments_dir / "install-assets.sh"
     content = assets_sh.read_text()
     assert 'cp "assets/asset_0/a.csv" "/opt/app/csvs/"' in content
     assert 'cp "assets/asset_0/b.csv" "/opt/app/csvs/"' in content
@@ -257,7 +257,7 @@ def test_grouped_assets_shared_repo_ref(tmp_path: Path):
 
     injector._inject_assets()
 
-    assets_sh = environments_dir / "dockerfile-assets.sh"
+    assets_sh = environments_dir / "install-assets.sh"
     content = assets_sh.read_text()
 
     # Both items should appear in the generated script with correct staging indices
@@ -340,7 +340,7 @@ def test_mixed_old_and_new_syntax(tmp_path: Path):
     injector._inject_assets()
 
     # Verify both items appear in the generated script.
-    assets_sh = environments_dir / "dockerfile-assets.sh"
+    assets_sh = environments_dir / "install-assets.sh"
     content = assets_sh.read_text()
 
     assert "assets/asset_0" in content, "First item must be staged as asset_0"
@@ -521,7 +521,7 @@ def test_grouped_assets_multiple_items_same_destination(tmp_path: Path):
     assert staged_b_exists, "Staging directory asset_1 should exist for second item."
 
     # Verify the generated script contains separate copy commands.
-    assets_sh = environments_dir / "dockerfile-assets.sh"
+    assets_sh = environments_dir / "install-assets.sh"
     content = assets_sh.read_text()
 
     count_asset0_copies = content.count("assets/asset_0")
