@@ -322,6 +322,7 @@ def test_mixed_old_and_new_syntax(tmp_path: Path):
         repo_manager=DummyRepoManager(repo_dir),
         spec_manager=DummySpecManager(assets_spec_mixed),
     )
+    injector.environments_path = environments_dir
 
     assets_list = injector.spec_manager.assets
 
@@ -508,10 +509,14 @@ def test_grouped_assets_multiple_items_same_destination(tmp_path: Path):
         repo_manager=DummyRepoManager(repo_dir),
         spec_manager=DummySpecManager(assets_spec_multi_items),
     )
+    injector.environments_path = environments_dir
 
     assets_list = injector.spec_manager.assets
 
     assert len(assets_list) == 2, "Should expand to two separate items"
+
+    # Inject first so staging directories are created.
+    injector._inject_assets()
 
     # Verify staging directories are distinct.
     staged_a_exists = (environments_dir / "assets" / "asset_0").exists()
