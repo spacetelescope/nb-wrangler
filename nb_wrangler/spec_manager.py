@@ -172,6 +172,9 @@ class SpecManager(
         Each asset is a dictionary with keys: repo, ref, source, destination.
         Returns an empty list if no assets are defined.
         """
+        if self.config.dev and "dev_overrides" in self._spec:
+            if "assets" in self._spec["dev_overrides"]:
+                return self._spec["dev_overrides"]["assets"] or []
         return self._spec.get("assets") or []
 
     @property

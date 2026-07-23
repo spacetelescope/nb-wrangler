@@ -76,10 +76,12 @@ class RepositoryManager(WranglerConfigurable, WranglerLoggable, WranglerEnvable)
                     # Determine default branch from origin
                     result = self.run(
                         "git symbolic-ref refs/remotes/origin/HEAD",
-                        check=True,
+                        check=False,
                         capture_output=True,
                         cwd=repo_path,
                     )
+                    if result.returncode != 0:
+                        return self.logger.error(f"Failed to determine default branch for {repo_url}." )
                     default_branch = (
                         result.stdout.strip()
                         .replace("refs/remotes/origin/", "")
