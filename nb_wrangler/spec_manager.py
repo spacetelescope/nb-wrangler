@@ -195,7 +195,7 @@ class SpecManager(
                 # Handle empty items list - skip entirely (this was the bug)
                 if len(items_list) == 0:
                     continue
-                    
+
                 for item in items_list:
                     flat_asset: dict[str, Any] = {"repo": repo_url, "ref": ref_val}
                     if isinstance(item, dict):
