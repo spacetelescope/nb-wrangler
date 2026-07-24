@@ -6,7 +6,7 @@ from pathlib import Path
 # Version
 __version__ = "0.8.2"
 
-WRANGLER_SPEC_VERSION = 2.2
+WRANGLER_SPEC_VERSION = 2.3
 
 # Path constants
 HOME = Path(os.environ.get("HOME", "."))
@@ -64,7 +64,7 @@ VALID_ARCHIVE_FORMATS = [
 ]
 
 # nbw-exports.sh and kernel values will be from refdata_dependencies.yaml vs. relative to pantry shelf
-DEFAULT_DATA_ENV_VARS_MODE = "spec"
+DEFAULT_DATA_ENV_VARS_MODE = "pantry"
 
 # Registry defaults
 DEFAULT_REGISTRY = "ghcr.io"

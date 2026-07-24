@@ -427,6 +427,7 @@ def parse_args():
     data_group.add_argument(
         "--data-no-symlinks",
         action="store_true",
+        default=True,
         help="""Do not create symlinks from install_data locations to the pantry data directory for the current spec during --data-unpack.""",
     )
     data_group.add_argument(
